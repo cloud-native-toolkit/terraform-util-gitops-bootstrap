@@ -2,7 +2,7 @@ locals {
   tmp_dir = "${path.cwd}/.tmp/gitops-bootstrap"
   secret_name = "custom-sealed-secret-${random_string.suffix.result}"
   argocd_config_file = "${local.tmp_dir}/argocd-config.json"
-  argocd_config = jeondecode(data.local_file.argocd_config.content)
+  argocd_config = jsondecode(data.local_file.argocd_config.content)
 }
 
 resource random_string suffix {
