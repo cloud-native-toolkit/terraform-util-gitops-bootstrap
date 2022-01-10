@@ -83,7 +83,7 @@ resource null_resource bootstrap_argocd {
     command = "${path.module}/scripts/argocd-bootstrap.sh ${self.triggers.argocd_host} ${self.triggers.argocd_user} ${var.gitops_namespace} ${self.triggers.git_repo} ${var.git_username} ${var.bootstrap_path}"
 
     environment = {
-      ARGOCD_PASSWORD = nonsensitive(self.triggers.argocd_password)
+      ARGOCD_PASSWORD = self.triggers.argocd_password
       GIT_TOKEN = nonsensitive(self.triggers.git_token)
     }
   }
