@@ -23,6 +23,7 @@ jobs:
           - ""
           - mytest
       fail-fast: false
+      max-parallel: 1
 
     env:
       HOME: /home/devops
