@@ -16,3 +16,9 @@ module "dev_cluster" {
   cluster_worker_count    = 3
   cluster_hardware        = ""
 }
+
+resource null_resource print_kubeconfig {
+  provisioner "local-exec" {
+    command = "echo '${module.dev_cluster.config_file_path}' > .kubeconfig"
+  }
+}

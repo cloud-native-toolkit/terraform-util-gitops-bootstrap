@@ -7,38 +7,37 @@ tags:
     - bootstrap
 versions:
 - platforms: []
-#  providers:
-#    - name: ibm
-#      source: "ibm-cloud/ibm"
-  dependencies: []
-#    - id: cluster
-#      refs:
-#        - source: github.com/ibm-garage-cloud/terraform-ibm-container-platform
-#          version: ">= 1.7.0"
-#        - source: github.com/ibm-garage-cloud/terraform-k8s-ocp-cluster
-#          version: ">= 2.0.0"
-#    - id: namespace
-#      refs:
-#        - source: github.com/ibm-garage-cloud/terraform-k8s-namespace
-#          version: ">= 2.1.0"
-  variables: []
-#    - name: cluster_type
-#      moduleRef:
-#        id: cluster
-#        output: type_code
-#    - name: cluster_ingress_hostname
-#      moduleRef:
-#        id: cluster
-#        output: ingress_hostname
-#    - name: cluster_config_file
-#      moduleRef:
-#        id: cluster
-#        output: config_file_path
-#    - name: tls_secret_name
-#      moduleRef:
-#        id: cluster
-#        output: tls_secret_name
-#    - name: releases_namespace
-#      moduleRef:
-#        id: namespace
-#        output: name
+  dependencies:
+    - id: gitops
+      refs:
+        - source: github.com/cloud-native-toolkit/terraform-tools-gitops
+          version: ">= 1.2.0"
+    - id: cert
+      refs:
+        - source: github.com/cloud-native-toolkit/terraform-util-sealed-secret-cert
+          version: ">= 0.0.0"
+  variables:
+    - name: gitops_repo_url
+      moduleRef:
+        id: gitops
+        output: config_repo_url
+    - name: git_username
+      moduleRef:
+        id: gitops
+        output: config_username
+    - name: git_token
+      moduleRef:
+        id: gitops
+        output: config_token
+    - name: bootstrap_path
+      moduleRef:
+        id: gitops
+        output: bootstrap_path
+    - name: sealed_secret_cert
+      moduleRef:
+        id: cert
+        output: cert
+    - name: sealed_secret_private_key
+      moduleRef:
+        id: cert
+        output: private_key
