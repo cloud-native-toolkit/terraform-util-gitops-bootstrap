@@ -12,18 +12,18 @@ module "gitops-bootstrap" {
 
 resource null_resource write_variables {
   provisioner "local-exec" {
-    command = "echo -n '${module.gitops.secret_name}' > .secret_name"
+    command = "echo -n '${module.gitops-bootstrap.secret_name}' > .secret_name"
   }
   provisioner "local-exec" {
-    command = "echo -n '${module.gitops.gitops_namespace}' > .gitops_namespace"
+    command = "echo -n '${module.gitops-bootstrap.gitops_namespace}' > .gitops_namespace"
   }
   provisioner "local-exec" {
-    command = "echo -n '${module.gitops.kubeseal_namespace}' > .kubeseal_namespace"
+    command = "echo -n '${module.gitops-bootstrap.kubeseal_namespace}' > .kubeseal_namespace"
   }
   provisioner "local-exec" {
-    command = "echo -n '${module.gitops.project_name}' > .project_name"
+    command = "echo -n '${module.gitops-bootstrap.project_name}' > .project_name"
   }
   provisioner "local-exec" {
-    command = "echo -n '${module.gitops.app_name}' > .app_name"
+    command = "echo -n '${module.gitops-bootstrap.app_name}' > .app_name"
   }
 }
