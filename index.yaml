@@ -1,0 +1,29 @@
+id: github.com/cloud-native-toolkit/terraform-util-gitops-bootstrap
+name: gitops-bootstrap
+type: terraform
+description: Module to connect existing ArgoCD and KubeSeal instances with a GitOps repo
+tags:
+  - tools
+  - gitops
+  - bootstrap
+versions: []
+#    - name: cluster_type
+#      moduleRef:
+#        id: cluster
+#        output: type_code
+#    - name: cluster_ingress_hostname
+#      moduleRef:
+#        id: cluster
+#        output: ingress_hostname
+#    - name: cluster_config_file
+#      moduleRef:
+#        id: cluster
+#        output: config_file_path
+#    - name: tls_secret_name
+#      moduleRef:
+#        id: cluster
+#        output: tls_secret_name
+#    - name: releases_namespace
+#      moduleRef:
+#        id: namespace
+#        output: name
