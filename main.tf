@@ -47,14 +47,13 @@ resource null_resource create_tls_secret {
     }
   }
 }
-
 resource null_resource retrieve_argocd_config {
   triggers = {
     always = timestamp()
   }
 
   provisioner "local-exec" {
-    command = "${path.module}/scripts/get-argocd-config.sh '${var.argocd_namespace}' '${local.argocd_config_file}'"
+    command = "${path.module}/scripts/get-argocd-config.sh '${var.gitops_namespace}' '${local.argocd_config_file}'"
 
     environment = {
       KUBECONFIG = var.cluster_config_file
@@ -81,7 +80,7 @@ resource null_resource bootstrap_argocd {
   }
 
   provisioner "local-exec" {
-    command = "${path.module}/scripts/argocd-bootstrap.sh ${self.triggers.argocd_host} ${self.triggers.argocd_user} ${var.argocd_namespace} ${self.triggers.git_repo} ${var.git_username} ${var.bootstrap_path}"
+    command = "${path.module}/scripts/argocd-bootstrap.sh ${self.triggers.argocd_host} ${self.triggers.argocd_user} ${var.gitops_namespace} ${self.triggers.git_repo} ${var.git_username} ${var.bootstrap_path}"
 
     environment = {
       ARGOCD_PASSWORD = nonsensitive(self.triggers.argocd_password)

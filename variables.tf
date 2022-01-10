@@ -3,7 +3,7 @@ variable "cluster_config_file" {
   description = "Cluster config file for Kubernetes cluster."
 }
 
-variable "argocd_namespace" {
+variable "gitops_namespace" {
   type        = string
   description = "The namespace where argocd has been deployed"
   default     = "openshift-gitops"
