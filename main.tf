@@ -77,24 +77,28 @@ resource null_resource bootstrap_argocd {
     argocd_password = local.argocd_config.password
     git_repo = var.gitops_repo_url
     git_token = var.git_token
+    prefix = var.prefix
+    bin_dir = module.setup_clis.bin_dir
   }
 
   provisioner "local-exec" {
-    command = "${path.module}/scripts/argocd-bootstrap.sh '${self.triggers.argocd_host}' '${self.triggers.argocd_user}' '${var.gitops_namespace}' '${self.triggers.git_repo}' '${var.git_username}' '${var.bootstrap_path}' '${var.prefix}'"
+    command = "${path.module}/scripts/argocd-bootstrap.sh '${self.triggers.argocd_host}' '${self.triggers.argocd_user}' '${var.gitops_namespace}' '${self.triggers.git_repo}' '${var.git_username}' '${var.bootstrap_path}' '${self.triggers.prefix}'"
 
     environment = {
       ARGOCD_PASSWORD = self.triggers.argocd_password
       GIT_TOKEN = nonsensitive(self.triggers.git_token)
+      BIN_DIR = self.triggers.bin_dir
     }
   }
 
   provisioner "local-exec" {
     when = destroy
 
-    command = "${path.module}/scripts/argocd-cleanup.sh ${self.triggers.argocd_host} ${self.triggers.argocd_user} ${self.triggers.git_repo}"
+    command = "${path.module}/scripts/argocd-cleanup.sh '${self.triggers.argocd_host}' '${self.triggers.argocd_user}' '${self.triggers.git_repo}' '${self.triggers.prefix}'"
 
     environment = {
       ARGOCD_PASSWORD = self.triggers.argocd_password
+      BIN_DIR = self.triggers.bin_dir
     }
   }
 }

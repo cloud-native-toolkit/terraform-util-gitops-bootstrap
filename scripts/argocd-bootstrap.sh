@@ -22,6 +22,11 @@ fi
 
 ARGOCD=$(command -v argocd || command -v "${BIN_DIR}/argocd")
 
+if [[ -z "${ARGOCD}" ]]; then
+  echo "ArgoCD cli not found"
+  exit 1
+fi
+
 echo "Logging into argocd: ${ARGOCD_HOST}"
 ${ARGOCD} login "${ARGOCD_HOST}" --username "${ARGOCD_USER}" --password "${ARGOCD_PASSWORD}" --insecure --grpc-web
 
