@@ -36,7 +36,6 @@ ${ARGOCD} repo add "${GIT_REPO}" --username "${GIT_USER}" --password "${GIT_TOKE
 PROJECT_NAME="0-bootstrap"
 BOOTSTRAP_APP_NAME="0-bootstrap"
 if [[ -n "${PREFIX}" ]]; then
-  PROJECT_NAME="${PREFIX}-${PROJECT_NAME}"
   BOOTSTRAP_APP_NAME="${PREFIX}-${BOOTSTRAP_APP_NAME}"
 fi
 
