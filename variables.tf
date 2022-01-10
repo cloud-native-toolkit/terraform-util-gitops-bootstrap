@@ -48,3 +48,9 @@ variable "sealed_secret_private_key" {
   default     = ""
   sensitive   = true
 }
+
+variable "prefix" {
+  type        = string
+  description = "Prefix value that should be added to the bootstrapped gitops repo in ArgoCD to prevent collisions"
+  default     = ""
+}

@@ -9,3 +9,21 @@ module "gitops-bootstrap" {
   sealed_secret_cert  = module.cert.cert
   sealed_secret_private_key = module.cert.private_key
 }
+
+resource null_resource write_variables {
+  provisioner "local-exec" {
+    command = "echo -n '${module.gitops.secret_name}' > .secret_name"
+  }
+  provisioner "local-exec" {
+    command = "echo -n '${module.gitops.gitops_namespace}' > .gitops_namespace"
+  }
+  provisioner "local-exec" {
+    command = "echo -n '${module.gitops.kubeseal_namespace}' > .kubeseal_namespace"
+  }
+  provisioner "local-exec" {
+    command = "echo -n '${module.gitops.project_name}' > .project_name"
+  }
+  provisioner "local-exec" {
+    command = "echo -n '${module.gitops.app_name}' > .app_name"
+  }
+}
