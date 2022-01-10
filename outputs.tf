@@ -17,11 +17,11 @@ output "kubeseal_namespace" {
 }
 
 output "project_name" {
-  value       = var.prefix ? "${var.prefix}-0-bootstrap" : "0-bootstrap"
+  value       = var.prefix == "" ? "${var.prefix}-0-bootstrap" : "0-bootstrap"
   depends_on  = [null_resource.bootstrap_argocd]
 }
 
 output "app_name" {
-  value       = var.prefix ? "${var.prefix}-0-bootstrap" : "0-bootstrap"
+  value       = var.prefix == "" ? "${var.prefix}-0-bootstrap" : "0-bootstrap"
   depends_on  = [null_resource.bootstrap_argocd]
 }
