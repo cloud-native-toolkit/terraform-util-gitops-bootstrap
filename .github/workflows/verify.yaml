@@ -19,6 +19,9 @@ jobs:
       matrix:
         testcase:
           - ocp4_latest
+        prefix:
+          - ""
+          - mytest
       fail-fast: false
 
     env:
@@ -54,6 +57,7 @@ jobs:
           TF_VAR_git_org: ${{ steps.variables.outputs.org }}
           TF_VAR_git_repo: ${{ steps.variables.outputs.repo }}
           TF_VAR_ibmcloud_api_key: ${{ secrets.IBMCLOUD_API_KEY }}
+          TF_VAR_bootstrap_prefix: ${{ matrix.prefix }}
           IBMCLOUD_API_KEY: ${{ secrets.IBMCLOUD_API_KEY }}
 
       - name: Verify destroy on ${{ matrix.testcase }}
@@ -67,6 +71,7 @@ jobs:
           TF_VAR_git_org: ${{ steps.variables.outputs.org }}
           TF_VAR_git_repo: ${{ steps.variables.outputs.repo }}
           TF_VAR_ibmcloud_api_key: ${{ secrets.IBMCLOUD_API_KEY }}
+          TF_VAR_bootstrap_prefix: ${{ matrix.prefix }}
           IBMCLOUD_API_KEY: ${{ secrets.IBMCLOUD_API_KEY }}
 
   verifyMetadata:

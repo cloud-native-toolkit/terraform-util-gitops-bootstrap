@@ -8,6 +8,7 @@ module "gitops-bootstrap" {
   bootstrap_path      = module.gitops.bootstrap_path
   sealed_secret_cert  = module.cert.cert
   sealed_secret_private_key = module.cert.private_key
+  prefix = var.bootstrap_prefix
 }
 
 resource null_resource write_variables {
