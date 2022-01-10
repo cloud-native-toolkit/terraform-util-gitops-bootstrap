@@ -1,9 +1,10 @@
-name: ""
+name: gitops-bootstrap
 type: terraform
-description: ""
+description: Module to connect existing ArgoCD and KubeSeal instances with a GitOps repo
 tags:
     - tools
-    - devops
+    - gitops
+    - bootstrap
 versions:
 - platforms: []
 #  providers:
