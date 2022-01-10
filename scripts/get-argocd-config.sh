@@ -9,7 +9,7 @@ mkdir -p "${OUTPUT_DIR}"
 ROUTE_NAME="openshift-gitops-server"
 SECRET_NAME="openshift-gitops-cluster"
 
-if ! kubectl get route "${ROUTE_NAME}" -n "${NAMESPACE}"; then
+if ! kubectl get route "${ROUTE_NAME}" -n "${NAMESPACE}" 1> /dev/null 2> /dev/null; then
   echo "Unable to find route: ${NAMESPACE}/${ROUTE_NAME}"
   exit 1
 fi
@@ -18,7 +18,7 @@ echo "Getting route from ${NAMESPACE}/${ROUTE_NAME}"
 HOST=$(kubectl get route "${ROUTE_NAME}" -n "${NAMESPACE}" -o json | "${BIN_DIR}/jq" -r '.spec.host')
 USER="admin"
 
-if ! kubectl get secret "${SECRET_NAME}" -n "${NAMESPACE}"; then
+if ! kubectl get secret "${SECRET_NAME}" -n "${NAMESPACE}" 1> /dev/null 2> /dev/null; then
   echo "Unable to find secret: ${NAMESPACE}/${SECRET_NAME}"
   exit 1
 fi
@@ -31,6 +31,3 @@ echo '{}' | "${BIN_DIR}/jq" \
   --arg USER "${USER}" \
   --arg PASSWORD "${PASSWORD}" \
   '{"host": $HOST, "user": $USER, "password": $PASSWORD}' > "${OUTPUT_FILE}"
-
-echo "Found argocd config"
-cat "${OUTPUT_FILE}"

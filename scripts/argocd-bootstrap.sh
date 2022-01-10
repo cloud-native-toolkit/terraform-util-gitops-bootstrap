@@ -19,14 +19,7 @@ if [[ -z "${ARGOCD_PASSWORD}" ]] || [[ -z "${GIT_TOKEN}" ]]; then
   exit 1
 fi
 
-ARGOCD=$(command -v argocd || command -v ./bin/argocd)
-
-if [[ -z "${ARGOCD}" ]]; then
-  VERSION=$(curl --silent "https://api.github.com/repos/argoproj/argo-cd/releases/latest" | grep '"tag_name"' | sed -E 's/.*"([^"]+)".*/\1/')
-  mkdir -p ./bin && curl -sSL -o ./bin/argocd https://github.com/argoproj/argo-cd/releases/download/$VERSION/argocd-linux-amd64
-  chmod +x ./bin/argocd
-  ARGOCD="$(cd ./bin; pwd -P)/argocd"
-fi
+ARGOCD=$(command -v argocd || command -v "${BIN_DIR}/argocd")
 
 echo "Logging into argocd: ${ARGOCD_HOST}"
 ${ARGOCD} login "${ARGOCD_HOST}" --username "${ARGOCD_USER}" --password "${ARGOCD_PASSWORD}" --insecure --grpc-web
