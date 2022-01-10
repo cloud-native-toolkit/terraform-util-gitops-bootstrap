@@ -1,3 +1,4 @@
+!!map
 id: github.com/cloud-native-toolkit/terraform-util-gitops-bootstrap
 name: gitops-bootstrap
 type: terraform
@@ -6,24 +7,79 @@ tags:
   - tools
   - gitops
   - bootstrap
-versions: []
-#    - name: cluster_type
-#      moduleRef:
-#        id: cluster
-#        output: type_code
-#    - name: cluster_ingress_hostname
-#      moduleRef:
-#        id: cluster
-#        output: ingress_hostname
-#    - name: cluster_config_file
-#      moduleRef:
-#        id: cluster
-#        output: config_file_path
-#    - name: tls_secret_name
-#      moduleRef:
-#        id: cluster
-#        output: tls_secret_name
-#    - name: releases_namespace
-#      moduleRef:
-#        id: namespace
-#        output: name
+versions:
+  - platforms: []
+    dependencies:
+      - id: gitops
+        refs:
+          - source: github.com/cloud-native-toolkit/terraform-tools-gitops
+            version: '>= 1.2.0'
+      - id: cert
+        refs:
+          - source: github.com/cloud-native-toolkit/terraform-util-sealed-secret-cert
+            version: '>= 0.0.0'
+    variables:
+      - name: gitops_repo_url
+        moduleRef:
+          id: gitops
+          output: config_repo_url
+        type: string
+        description: The GitOps repo url
+      - name: git_username
+        moduleRef:
+          id: gitops
+          output: config_username
+        type: string
+        description: The username used to access the GitOps repo
+      - name: git_token
+        moduleRef:
+          id: gitops
+          output: config_token
+        type: string
+        description: The token used to access the GitOps repo
+        sensitive: true
+      - name: bootstrap_path
+        moduleRef:
+          id: gitops
+          output: bootstrap_path
+        type: string
+        description: The path to the bootstrap config for ArgoCD
+      - name: sealed_secret_cert
+        moduleRef:
+          id: cert
+          output: cert
+        type: string
+        description: The certificate that will be used to encrypt sealed secrets. If not provided, a new one will be generated
+        default: ""
+      - name: sealed_secret_private_key
+        moduleRef:
+          id: cert
+          output: private_key
+        type: string
+        description: The private key that will be used to decrypt sealed secrets. If not provided, a new one will be generated
+        sensitive: true
+        default: ""
+      - name: cluster_config_file
+        type: string
+        description: Cluster config file for Kubernetes cluster.
+      - name: gitops_namespace
+        type: string
+        description: The namespace where argocd has been deployed
+        default: openshift-gitops
+      - name: kubeseal_namespace
+        type: string
+        description: The namespace where kubeseal has been deployed
+        default: sealed-secrets
+      - name: prefix
+        type: string
+        description: Prefix value that should be added to the bootstrapped gitops repo in ArgoCD to prevent collisions
+        default: ""
+    version: v1.0.0
+    outputs:
+      - name: secret_name
+        description: The name of the kubeseal secret that was created
+      - name: gitops_namespace
+        description: The name of the kubeseal secret that was created
+      - name: kubeseal_namespace
+        description: The name of the namespace namespace where kubeseal is deployed
+      - name: project_name
