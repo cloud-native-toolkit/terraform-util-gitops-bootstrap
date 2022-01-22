@@ -33,10 +33,12 @@ ${ARGOCD} login "${ARGOCD_HOST}" --username "${ARGOCD_USER}" --password "${ARGOC
 echo "Registering git repo: ${GIT_REPO}"
 ${ARGOCD} repo add "${GIT_REPO}" --username "${GIT_USER}" --password "${GIT_TOKEN}" --upsert
 
+LABEL="gitops-bootstrap"
 PROJECT_NAME="0-bootstrap"
 BOOTSTRAP_APP_NAME="0-bootstrap"
 if [[ -n "${PREFIX}" ]]; then
   BOOTSTRAP_APP_NAME="${PREFIX}-${BOOTSTRAP_APP_NAME}"
+  LABEL="${PREFIX}-${LABEL}"
 fi
 
 echo "Creating bootstrap project"
@@ -52,6 +54,7 @@ ${ARGOCD} app create "${BOOTSTRAP_APP_NAME}" \
   --repo "${GIT_REPO}" \
   --path "${BOOTSTRAP_PATH}" \
   --helm-set "global.prefix=${PREFIX}" \
+  --helm-set "global.groupLabel=${LABEL}" \
   --dest-namespace "${ARGOCD_NAMESPACE}" \
   --dest-server "https://kubernetes.default.svc" \
   --sync-policy auto \
