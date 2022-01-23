@@ -27,11 +27,22 @@ fi
 echo "Logging into argocd: ${ARGOCD_HOST}"
 ${ARGOCD} login "${ARGOCD_HOST}" --username "${ARGOCD_USER}" --password "${ARGOCD_PASSWORD}" --insecure --grpc-web
 
+LABEL="gitops-bootstrap"
 PROJECT_NAME="0-bootstrap"
 BOOTSTRAP_APP_NAME="0-bootstrap"
 if [[ -n "${PREFIX}" ]]; then
   BOOTSTRAP_APP_NAME="${PREFIX}-${BOOTSTRAP_APP_NAME}"
+  LABEL="${PREFIX}-${LABEL}"
 fi
+
+echo "Sleeping for two minutes to allow gitops changes to be pushed"
+sleep 120
+
+echo "Syncing app"
+${ARGOCD} app sync -l "app.kubernetes.io/part-of=${LABEL}"
+
+echo "Sleeping for two minutes to allow changes to be applied"
+sleep 120
 
 echo "Deleting bootstrap application"
 ${ARGOCD} app delete "${BOOTSTRAP_APP_NAME}"
