@@ -83,3 +83,6 @@ variable "gitops_namespace" {
 variable "bootstrap_prefix" {
   default = ""
 }
+
+variable "server_url" {
+}
