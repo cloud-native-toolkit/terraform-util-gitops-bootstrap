@@ -86,3 +86,7 @@ variable "bootstrap_prefix" {
 
 variable "server_url" {
 }
+
+variable "kubeseal_namespace" {
+  default = "sealed-secrets"
+}

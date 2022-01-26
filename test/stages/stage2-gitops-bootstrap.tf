@@ -10,6 +10,7 @@ module "gitops-bootstrap" {
   sealed_secret_private_key = module.cert.private_key
   prefix              = var.bootstrap_prefix
   create_webhook      = true
+  kubeseal_namespace = var.kubeseal_namespace
 }
 
 resource null_resource write_variables {
