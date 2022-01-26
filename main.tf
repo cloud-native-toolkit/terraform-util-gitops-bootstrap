@@ -102,3 +102,15 @@ resource null_resource bootstrap_argocd {
     }
   }
 }
+
+resource null_resource create_webhook {
+  count = var.create_webhook ? 1 : 0
+
+  provisioner "local-exec" {
+    command = "${path.module}/scripts/argocd-webhook.sh '${local.argocd_config.host}' '${var.gitops_repo_url}'"
+
+    environment = {
+      GIT_TOKEN = nonsensitive(var.git_token)
+    }
+  }
+}

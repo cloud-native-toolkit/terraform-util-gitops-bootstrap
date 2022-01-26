@@ -54,3 +54,9 @@ variable "prefix" {
   description = "Prefix value that should be added to the bootstrapped gitops repo in ArgoCD to prevent collisions"
   default     = ""
 }
+
+variable "create_webhook" {
+  type        = bool
+  description = "Flag indicating that a webhook should be created to notify the argocd instance"
+  default     = false
+}
