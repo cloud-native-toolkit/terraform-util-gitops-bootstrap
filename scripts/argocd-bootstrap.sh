@@ -41,43 +41,41 @@ if [[ -n "${PREFIX}" ]]; then
   LABEL="${PREFIX}-${LABEL}"
 fi
 
-echo "Creating bootstrap project"
-${ARGOCD} proj create "${PROJECT_NAME}" \
-  -d "https://kubernetes.default.svc,${ARGOCD_NAMESPACE}" \
-  -s "${GIT_REPO}" \
-  --description "Bootstrap project resources" \
-  --upsert
-
-sleep 10
-
-echo "Creating bootstrap application"
-${ARGOCD} app create "${BOOTSTRAP_APP_NAME}" \
-  --project "${PROJECT_NAME}" \
-  --repo "${GIT_REPO}" \
-  --path "${BOOTSTRAP_PATH}" \
-  --helm-set "global.prefix=${PREFIX}" \
-  --helm-set "global.groupLabel=${LABEL}" \
-  --dest-namespace "${ARGOCD_NAMESPACE}" \
-  --dest-server "https://kubernetes.default.svc" \
-  --sync-policy auto \
-  --self-heal \
-  --auto-prune \
-  --upsert
-
-if [[ $? -ne 0 ]]; then
-  echo "Error creating application. Sleeping then retrying"
-
-  sleep 30
-  ${ARGOCD} app create "${BOOTSTRAP_APP_NAME}" \
-    --project "${PROJECT_NAME}" \
-    --repo "${GIT_REPO}" \
-    --path "${BOOTSTRAP_PATH}" \
-    --helm-set "global.prefix=${PREFIX}" \
-    --helm-set "global.groupLabel=${LABEL}" \
-    --dest-namespace "${ARGOCD_NAMESPACE}" \
-    --dest-server "https://kubernetes.default.svc" \
-    --sync-policy auto \
-    --self-heal \
-    --auto-prune \
-    --upsert
-fi
+echo "Creating bootstrap project and bootstrap application"
+oc apply -f - << EOF
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: ${PROJECT_NAME}
+  namespace: ${ARGOCD_NAMESPACE}
+spec:
+  destinations:
+  - namespace: ${ARGOCD_NAMESPACE}
+    server: https://kubernetes.default.svc
+  sourceRepos:
+  - ${GIT_REPO}
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: ${BOOTSTRAP_APP_NAME}
+  namespace: ${ARGOCD_NAMESPACE}
+spec:
+  destination:
+    namespace: ${ARGOCD_NAMESPACE}
+    server: https://kubernetes.default.svc
+  project: ${PROJECT_NAME}
+  source:
+    helm:
+      parameters:
+      - name: global.prefix
+        value: ${PREFIX}
+      - name: global.groupLabel
+        value: ${LABEL}
+    path: ${BOOTSTRAP_PATH}
+    repoURL: ${GIT_REPO}
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+EOF

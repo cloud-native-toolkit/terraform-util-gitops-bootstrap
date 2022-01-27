@@ -35,14 +35,14 @@ if [[ -n "${PREFIX}" ]]; then
   LABEL="${PREFIX}-${LABEL}"
 fi
 
-echo "Sleeping for two minutes to allow gitops changes to be pushed"
-sleep 120
+echo "Sleeping for 1 minute to allow gitops changes to be pushed"
+sleep 60
 
 echo "Syncing app"
 ${ARGOCD} app sync -l "app.kubernetes.io/part-of=${LABEL}"
 
-echo "Sleeping for two minutes to allow changes to be applied"
-sleep 120
+echo "Sleeping for 1 minute to allow changes to be applied"
+sleep 60
 
 echo "Deleting bootstrap application"
 ${ARGOCD} app delete "${BOOTSTRAP_APP_NAME}"
