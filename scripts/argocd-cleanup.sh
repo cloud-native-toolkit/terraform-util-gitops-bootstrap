@@ -45,7 +45,7 @@ echo "Sleeping for 1 minute to allow changes to be applied"
 sleep 60
 
 echo "Deleting bootstrap application"
-${ARGOCD} app delete "${BOOTSTRAP_APP_NAME}"
+${ARGOCD} app delete "${BOOTSTRAP_APP_NAME}" -y
 
 echo "Deleting bootstrap project"
 ${ARGOCD} proj delete "${PROJECT_NAME}"
