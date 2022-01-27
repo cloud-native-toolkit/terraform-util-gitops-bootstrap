@@ -10,8 +10,8 @@ fi
 
 WEBHOOK_URL="https://${ARGOCD_HOST}/api/webhook"
 
-GIT_ORG=$(echo "${GIT_URL}" | sed -E "s~https://github.com/([^/])/(.*)~\1~")
-GIT_REPO=$(echo "${GIT_URL}" | sed -E "s~https://github.com/([^/])/(.*)~\2~")
+GIT_ORG=$(echo "${GIT_URL}" | sed -E "s~https://github.com/([^/]+)/(.*)~\1~")
+GIT_REPO=$(echo "${GIT_URL}" | sed -E "s~https://github.com/([^/]+)/(.*)~\2~")
 
 # TODO only supports github for now. replace with 'gitu' cli
 GIT_API_URL="https://api.github.com/repos/${GIT_ORG}/${GIT_REPO}/hooks"
