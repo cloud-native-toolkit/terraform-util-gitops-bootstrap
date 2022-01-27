@@ -23,7 +23,7 @@ curl "${GIT_API_URL}" \
      -X POST \
      -d @- << EOF
 {
-  "name": "argocd",
+  "name": "web",
   "active": true,
   "events": [
     "push"
