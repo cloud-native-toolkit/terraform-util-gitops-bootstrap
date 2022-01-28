@@ -79,6 +79,7 @@ resource null_resource bootstrap_argocd {
     git_token = var.git_token
     prefix = var.prefix
     bin_dir = module.setup_clis.bin_dir
+    kubeconfig = var.cluster_config_file
   }
 
   provisioner "local-exec" {
@@ -88,6 +89,7 @@ resource null_resource bootstrap_argocd {
       ARGOCD_PASSWORD = self.triggers.argocd_password
       GIT_TOKEN = nonsensitive(self.triggers.git_token)
       BIN_DIR = self.triggers.bin_dir
+      KUBECONFIG = self.triggers.kubeconfig
     }
   }
 
@@ -99,6 +101,7 @@ resource null_resource bootstrap_argocd {
     environment = {
       ARGOCD_PASSWORD = self.triggers.argocd_password
       BIN_DIR = self.triggers.bin_dir
+      KUBECONFIG = self.triggers.kubeconfig
     }
   }
 }
