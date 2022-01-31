@@ -8,6 +8,9 @@ tags:
 versions:
 - platforms: []
   dependencies:
+    - id: cluster
+      interface: github.com/cloud-native-toolkit/automation-modules#cluster
+      refs: []
     - id: gitops
       refs:
         - source: github.com/cloud-native-toolkit/terraform-tools-gitops
@@ -17,6 +20,10 @@ versions:
         - source: github.com/cloud-native-toolkit/terraform-util-sealed-secret-cert
           version: ">= 0.0.0"
   variables:
+    - name: cluster_config_file
+      moduleRef:
+        id: cluster
+        output: config_file_path
     - name: gitops_repo_url
       moduleRef:
         id: gitops
