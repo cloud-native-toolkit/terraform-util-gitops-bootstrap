@@ -27,6 +27,13 @@ if [[ -z "${ARGOCD}" ]]; then
   exit 1
 fi
 
+count=0
+while [[ $(curl -s -o /dev/null -w "%{http_code}" "https://${ARGOCD_HOST}") == "404" ]] && [[ $count -lt 20 ]]; do
+  echo "Waiting for ArgoCD SSL route to be ready"
+  count=$((count + 1))
+  sleep 30
+done
+
 echo "Logging into argocd: ${ARGOCD_HOST}"
 ${ARGOCD} login "${ARGOCD_HOST}" --username "${ARGOCD_USER}" --password "${ARGOCD_PASSWORD}" --insecure --grpc-web
 
