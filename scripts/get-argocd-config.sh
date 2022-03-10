@@ -9,20 +9,20 @@ BIN_DIR=$(echo "${INPUT}" | grep "bin_dir" | sed -E 's/.*"bin_dir": ?"([^"]*)".*
 ROUTE_NAME="openshift-gitops-server"
 SECRET_NAME="openshift-gitops-cluster"
 
-if ! kubectl get route "${ROUTE_NAME}" -n "${NAMESPACE}" 1> /dev/null 2> /dev/null; then
+if ! ${BIN_DIR}/kubectl get route "${ROUTE_NAME}" -n "${NAMESPACE}" 1> /dev/null 2> /dev/null; then
   echo "{\"status\": \"error\", \"message\": \"Unable to find route: ${NAMESPACE}/${ROUTE_NAME}\"}"
   exit 1
 fi
 
-HOST=$(kubectl get route "${ROUTE_NAME}" -n "${NAMESPACE}" -o json | "${BIN_DIR}/jq" -r '.spec.host')
+HOST=$(${BIN_DIR}/kubectl get route "${ROUTE_NAME}" -n "${NAMESPACE}" -o json | "${BIN_DIR}/jq" -r '.spec.host')
 USER="admin"
 
-if ! kubectl get secret "${SECRET_NAME}" -n "${NAMESPACE}" 1> /dev/null 2> /dev/null; then
+if ! ${BIN_DIR}/kubectl get secret "${SECRET_NAME}" -n "${NAMESPACE}" 1> /dev/null 2> /dev/null; then
   echo "{\"status\": \"error\", \"message\": \"Unable to find secret: ${NAMESPACE}/${SECRET_NAME}\"}"
   exit 1
 fi
 
-PASSWORD=$(kubectl get secret "${SECRET_NAME}" -n "${NAMESPACE}" -o json | "${BIN_DIR}/jq" -r '.data["admin.password"]' | base64 -d)
+PASSWORD=$(${BIN_DIR}/kubectl get secret "${SECRET_NAME}" -n "${NAMESPACE}" -o json | "${BIN_DIR}/jq" -r '.data["admin.password"]' | base64 -d)
 
 echo '{}' | "${BIN_DIR}/jq" \
   --arg HOST "${HOST}" \

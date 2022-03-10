@@ -22,12 +22,14 @@ resource null_resource create_tls_secret {
     kubeconfig = var.cluster_config_file
     namespace = var.kubeseal_namespace
     secret_name = local.secret_name
+    bin_dir = module.setup_clis.bin_dir
   }
 
   provisioner "local-exec" {
     command = "${path.module}/scripts/create-tls-secret.sh ${self.triggers.namespace} ${self.triggers.secret_name}"
 
     environment = {
+      BIN_DIR     = self.triggers.bin_dir
       KUBECONFIG  = self.triggers.kubeconfig
       PRIVATE_KEY = var.sealed_secret_private_key
       CERT        = var.sealed_secret_cert
@@ -41,6 +43,7 @@ resource null_resource create_tls_secret {
     command = "${path.module}/scripts/delete-tls-secret.sh ${self.triggers.namespace} ${self.triggers.secret_name}"
 
     environment = {
+      BIN_DIR    = self.triggers.bin_dir
       KUBECONFIG = self.triggers.kubeconfig
     }
   }

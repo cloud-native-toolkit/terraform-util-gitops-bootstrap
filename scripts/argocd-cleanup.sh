@@ -44,6 +44,9 @@ ${ARGOCD} app sync -l "app.kubernetes.io/part-of=${LABEL}"
 echo "Sleeping for 1 minute to allow changes to be applied"
 sleep 60
 
+echo "Logging into argocd: ${ARGOCD_HOST}"
+${ARGOCD} login "${ARGOCD_HOST}" --username "${ARGOCD_USER}" --password "${ARGOCD_PASSWORD}" --insecure --grpc-web
+
 echo "Deleting bootstrap application"
 ${ARGOCD} app delete "${BOOTSTRAP_APP_NAME}" -y
 
