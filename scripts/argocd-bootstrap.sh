@@ -49,7 +49,7 @@ if [[ -n "${PREFIX}" ]]; then
 fi
 
 echo "Creating bootstrap project and bootstrap application"
-oc apply -f - << EOF
+${BIN_DIR}/oc apply -f - << EOF
 apiVersion: argoproj.io/v1alpha1
 kind: AppProject
 metadata:
