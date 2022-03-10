@@ -14,7 +14,7 @@ resource random_string suffix {
 module setup_clis {
   source = "github.com/cloud-native-toolkit/terraform-util-clis.git"
 
-  clis = ["helm","jq","argocd","kubectl"]
+  clis = ["helm","jq","argocd","kubectl","oc"]
 }
 
 resource null_resource create_tls_secret {
