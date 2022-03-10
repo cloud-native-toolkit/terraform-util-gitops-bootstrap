@@ -44,6 +44,8 @@ ${ARGOCD} app sync -l "app.kubernetes.io/part-of=${LABEL}"
 echo "Sleeping for 1 minute to allow changes to be applied"
 sleep 60
 
+set -e
+
 echo "Logging into argocd: ${ARGOCD_HOST}"
 ${ARGOCD} login "${ARGOCD_HOST}" --username "${ARGOCD_USER}" --password "${ARGOCD_PASSWORD}" --insecure --grpc-web
 
