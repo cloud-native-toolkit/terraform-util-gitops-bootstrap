@@ -50,7 +50,7 @@ echo "Logging into argocd: ${ARGOCD_HOST}"
 ${ARGOCD} login "${ARGOCD_HOST}" --username "${ARGOCD_USER}" --password "${ARGOCD_PASSWORD}" --insecure --grpc-web
 
 echo "Deleting bootstrap application"
-${ARGOCD} app delete "${BOOTSTRAP_APP_NAME}" -y
+${ARGOCD} app delete "${BOOTSTRAP_APP_NAME}" -y -p background
 
 set +e
 
