@@ -52,8 +52,10 @@ ${ARGOCD} login "${ARGOCD_HOST}" --username "${ARGOCD_USER}" --password "${ARGOC
 echo "Deleting bootstrap application"
 ${ARGOCD} app delete "${BOOTSTRAP_APP_NAME}" -y
 
+set +e
+
 echo "Deleting bootstrap project"
 ${ARGOCD} proj delete "${PROJECT_NAME}"
 
 echo "Removing git repo: ${GIT_REPO}"
-${ARGOCD} repo rm "${GIT_REPO}"
+${ARGOCD} repo rm "${GIT_REPO}" || echo "Failed to remove repo"
