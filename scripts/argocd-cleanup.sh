@@ -25,7 +25,7 @@ if ! command -v argocd 1> /dev/null 2> /dev/null; then
 fi
 
 echo "Logging into argocd: ${ARGOCD_HOST}"
-argocd login "${ARGOCD_HOST}" --username "${ARGOCD_USER}" --password "${ARGOCD_PASSWORD}" --insecure --grpc-web
+argocd login "${ARGOCD_HOST}" --username "${ARGOCD_USER}" --password "${ARGOCD_PASSWORD}" --insecure --grpc-web || exit 0
 
 LABEL="gitops-bootstrap"
 PROJECT_NAME="0-bootstrap"
@@ -45,7 +45,7 @@ echo "Sleeping for 1 minute to allow changes to be applied"
 sleep 60
 
 echo "Logging into argocd: ${ARGOCD_HOST}"
-argocd login "${ARGOCD_HOST}" --username "${ARGOCD_USER}" --password "${ARGOCD_PASSWORD}" --insecure --grpc-web || exit 1
+argocd login "${ARGOCD_HOST}" --username "${ARGOCD_USER}" --password "${ARGOCD_PASSWORD}" --insecure --grpc-web || exit 0
 
 if [[ "${DELETE_APP}" != "false" ]]; then
   echo "Deleting bootstrap application"
