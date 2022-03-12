@@ -20,10 +20,15 @@ if [[ -z "${ARGOCD_PASSWORD}" ]] || [[ -z "${GIT_TOKEN}" ]]; then
   exit 1
 fi
 
-ARGOCD=$(command -v argocd || command -v "${BIN_DIR}/argocd")
+export PATH="${BIN_DIR};${PATH}"
 
-if [[ -z "${ARGOCD}" ]]; then
+if ! command -v argocd 1> /dev/null 2> /dev/null; then
   echo "ArgoCD cli not found"
+  exit 1
+fi
+
+if ! command -v oc 1> /dev/null 2> /dev/null; then
+  echo "oc cli not found"
   exit 1
 fi
 
@@ -35,10 +40,10 @@ while [[ $(curl -s -o /dev/null -w "%{http_code}" "https://${ARGOCD_HOST}") == "
 done
 
 echo "Logging into argocd: ${ARGOCD_HOST}"
-${ARGOCD} login "${ARGOCD_HOST}" --username "${ARGOCD_USER}" --password "${ARGOCD_PASSWORD}" --insecure --grpc-web
+argocd login "${ARGOCD_HOST}" --username "${ARGOCD_USER}" --password "${ARGOCD_PASSWORD}" --insecure --grpc-web
 
 echo "Registering git repo: ${GIT_REPO}"
-${ARGOCD} repo add "${GIT_REPO}" --username "${GIT_USER}" --password "${GIT_TOKEN}" --upsert
+argocd repo add "${GIT_REPO}" --username "${GIT_USER}" --password "${GIT_TOKEN}" --upsert
 
 LABEL="gitops-bootstrap"
 PROJECT_NAME="0-bootstrap"
@@ -49,7 +54,7 @@ if [[ -n "${PREFIX}" ]]; then
 fi
 
 echo "Creating bootstrap project and bootstrap application"
-${BIN_DIR}/oc apply -f - << EOF
+oc apply -f - << EOF
 apiVersion: argoproj.io/v1alpha1
 kind: AppProject
 metadata:

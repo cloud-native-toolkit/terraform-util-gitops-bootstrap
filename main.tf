@@ -71,6 +71,7 @@ resource null_resource bootstrap_argocd {
     prefix = var.prefix
     bin_dir = module.setup_clis.bin_dir
     kubeconfig = var.cluster_config_file
+    delete_app = var.delete_app_on_destroy
   }
 
   provisioner "local-exec" {
@@ -93,6 +94,7 @@ resource null_resource bootstrap_argocd {
       ARGOCD_PASSWORD = self.triggers.argocd_password
       BIN_DIR = self.triggers.bin_dir
       KUBECONFIG = self.triggers.kubeconfig
+      DELETE_APP = self.triggers.delete_app
     }
   }
 }

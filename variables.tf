@@ -60,3 +60,9 @@ variable "create_webhook" {
   description = "Flag indicating that a webhook should be created to notify the argocd instance"
   default     = false
 }
+
+variable "delete_app_on_destroy" {
+  type        = bool
+  description = "Flag indicating that the bootstrap application should be removed from the cluster when the module is destroyed"
+  default     = true
+}
