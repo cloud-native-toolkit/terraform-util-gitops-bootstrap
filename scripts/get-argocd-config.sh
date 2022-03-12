@@ -9,7 +9,7 @@ BIN_DIR=$(echo "${INPUT}" | grep "bin_dir" | sed -E 's/.*"bin_dir": ?"([^"]*)".*
 ROUTE_NAME="openshift-gitops-server"
 SECRET_NAME="openshift-gitops-cluster"
 
-export PATH="${BIN_DIR};${PATH}"
+export PATH="${BIN_DIR}:${PATH}"
 
 if ! command -v kubectl 1> /dev/null 2> /dev/null; then
   echo "kubectl cli not found" >&2

@@ -11,6 +11,7 @@ module "gitops-bootstrap" {
   prefix              = var.bootstrap_prefix
   create_webhook      = true
   kubeseal_namespace = var.kubeseal_namespace
+  delete_app_on_destroy = false
 }
 
 resource null_resource write_variables {

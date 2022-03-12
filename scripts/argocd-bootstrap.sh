@@ -20,7 +20,7 @@ if [[ -z "${ARGOCD_PASSWORD}" ]] || [[ -z "${GIT_TOKEN}" ]]; then
   exit 1
 fi
 
-export PATH="${BIN_DIR};${PATH}"
+export PATH="${BIN_DIR}:${PATH}"
 
 if ! command -v argocd 1> /dev/null 2> /dev/null; then
   echo "ArgoCD cli not found"
