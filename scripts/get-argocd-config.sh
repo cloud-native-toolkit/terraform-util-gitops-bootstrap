@@ -1,33 +1,43 @@
 #!/usr/bin/env bash
 
-NAMESPACE="$1"
-OUTPUT_FILE="$2"
+INPUT=$(tee)
 
-OUTPUT_DIR=$(dirname "${OUTPUT_FILE}")
-mkdir -p "${OUTPUT_DIR}"
+export KUBECONFIG=$(echo "${INPUT}" | grep "kube_config" | sed -E 's/.*"kube_config": ?"([^"]*)".*/\1/g')
+NAMESPACE=$(echo "${INPUT}" | grep "namespace" | sed -E 's/.*"namespace": ?"([^"]*)".*/\1/g')
+BIN_DIR=$(echo "${INPUT}" | grep "bin_dir" | sed -E 's/.*"bin_dir": ?"([^"]*)".*/\1/g')
 
 ROUTE_NAME="openshift-gitops-server"
 SECRET_NAME="openshift-gitops-cluster"
 
-if ! kubectl get route "${ROUTE_NAME}" -n "${NAMESPACE}" 1> /dev/null 2> /dev/null; then
-  echo "Unable to find route: ${NAMESPACE}/${ROUTE_NAME}"
+export PATH="${BIN_DIR}:${PATH}"
+
+if ! command -v kubectl 1> /dev/null 2> /dev/null; then
+  echo "kubectl cli not found" >&2
   exit 1
 fi
 
-echo "Getting route from ${NAMESPACE}/${ROUTE_NAME}"
-HOST=$(kubectl get route "${ROUTE_NAME}" -n "${NAMESPACE}" -o json | "${BIN_DIR}/jq" -r '.spec.host')
+if ! command -v jq 1> /dev/null 2> /dev/null; then
+  echo "jq cli not found" >&2
+  exit 1
+fi
+
+if ! kubectl get route "${ROUTE_NAME}" -n "${NAMESPACE}" 1> /dev/null 2> /dev/null; then
+  echo "{\"status\": \"error\", \"message\": \"Unable to find route: ${NAMESPACE}/${ROUTE_NAME}\"}"
+  exit 1
+fi
+
+HOST=$(kubectl get route "${ROUTE_NAME}" -n "${NAMESPACE}" -o json | jq -r '.spec.host')
 USER="admin"
 
 if ! kubectl get secret "${SECRET_NAME}" -n "${NAMESPACE}" 1> /dev/null 2> /dev/null; then
-  echo "Unable to find secret: ${NAMESPACE}/${SECRET_NAME}"
+  echo "{\"status\": \"error\", \"message\": \"Unable to find secret: ${NAMESPACE}/${SECRET_NAME}\"}"
   exit 1
 fi
 
-echo "Getting password from ${NAMESPACE}/${SECRET_NAME}"
-PASSWORD=$(kubectl get secret "${SECRET_NAME}" -n "${NAMESPACE}" -o json | "${BIN_DIR}/jq" -r '.data["admin.password"]' | base64 -d)
+PASSWORD=$(kubectl get secret "${SECRET_NAME}" -n "${NAMESPACE}" -o json | jq -r '.data["admin.password"]' | base64 -d)
 
-echo '{}' | "${BIN_DIR}/jq" \
+echo '{}' | jq \
   --arg HOST "${HOST}" \
   --arg USER "${USER}" \
   --arg PASSWORD "${PASSWORD}" \
-  '{"host": $HOST, "user": $USER, "password": $PASSWORD}' > "${OUTPUT_FILE}"
+  '{"host": $HOST, "user": $USER, "password": $PASSWORD}'

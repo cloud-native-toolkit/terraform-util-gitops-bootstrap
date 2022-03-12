@@ -17,15 +17,15 @@ if [[ -z "${ARGOCD_PASSWORD}" ]]; then
   exit 1
 fi
 
-ARGOCD=$(command -v argocd || command -v "${BIN_DIR}/argocd")
+export PATH="${BIN_DIR}:${PATH}"
 
-if [[ -z "${ARGOCD}" ]]; then
+if ! command -v argocd 1> /dev/null 2> /dev/null; then
   echo "ArgoCD cli not found"
   exit 1
 fi
 
 echo "Logging into argocd: ${ARGOCD_HOST}"
-${ARGOCD} login "${ARGOCD_HOST}" --username "${ARGOCD_USER}" --password "${ARGOCD_PASSWORD}" --insecure --grpc-web
+argocd login "${ARGOCD_HOST}" --username "${ARGOCD_USER}" --password "${ARGOCD_PASSWORD}" --insecure --grpc-web
 
 LABEL="gitops-bootstrap"
 PROJECT_NAME="0-bootstrap"
@@ -39,16 +39,21 @@ echo "Sleeping for 1 minute to allow gitops changes to be pushed"
 sleep 60
 
 echo "Syncing app"
-${ARGOCD} app sync -l "app.kubernetes.io/part-of=${LABEL}"
+argocd app sync -l "app.kubernetes.io/part-of=${LABEL}"
 
 echo "Sleeping for 1 minute to allow changes to be applied"
 sleep 60
 
-echo "Deleting bootstrap application"
-${ARGOCD} app delete "${BOOTSTRAP_APP_NAME}" -y
+echo "Logging into argocd: ${ARGOCD_HOST}"
+argocd login "${ARGOCD_HOST}" --username "${ARGOCD_USER}" --password "${ARGOCD_PASSWORD}" --insecure --grpc-web || exit 1
 
-echo "Deleting bootstrap project"
-${ARGOCD} proj delete "${PROJECT_NAME}"
+if [[ "${DELETE_APP}" != "false" ]]; then
+  echo "Deleting bootstrap application"
+  argocd app delete "${BOOTSTRAP_APP_NAME}" -y -p background || exit 1
+
+  echo "Deleting bootstrap project"
+  argocd proj delete "${PROJECT_NAME}"
+fi
 
 echo "Removing git repo: ${GIT_REPO}"
-${ARGOCD} repo rm "${GIT_REPO}"
+argocd repo rm "${GIT_REPO}" || echo "Failed to remove repo"

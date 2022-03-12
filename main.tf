@@ -1,8 +1,6 @@
 locals {
   tmp_dir = "${path.cwd}/.tmp/gitops-bootstrap"
   secret_name = "custom-sealed-secret-${random_string.suffix.result}"
-  argocd_config_file = "${local.tmp_dir}/argocd-config.json"
-  argocd_config = jsondecode(data.local_file.argocd_config.content)
 }
 
 resource random_string suffix {
@@ -16,7 +14,7 @@ resource random_string suffix {
 module setup_clis {
   source = "github.com/cloud-native-toolkit/terraform-util-clis.git"
 
-  clis = ["helm","jq","argocd"]
+  clis = ["helm","jq","argocd","kubectl","oc"]
 }
 
 resource null_resource create_tls_secret {
@@ -24,12 +22,14 @@ resource null_resource create_tls_secret {
     kubeconfig = var.cluster_config_file
     namespace = var.kubeseal_namespace
     secret_name = local.secret_name
+    bin_dir = module.setup_clis.bin_dir
   }
 
   provisioner "local-exec" {
     command = "${path.module}/scripts/create-tls-secret.sh ${self.triggers.namespace} ${self.triggers.secret_name}"
 
     environment = {
+      BIN_DIR     = self.triggers.bin_dir
       KUBECONFIG  = self.triggers.kubeconfig
       PRIVATE_KEY = var.sealed_secret_private_key
       CERT        = var.sealed_secret_cert
@@ -43,43 +43,35 @@ resource null_resource create_tls_secret {
     command = "${path.module}/scripts/delete-tls-secret.sh ${self.triggers.namespace} ${self.triggers.secret_name}"
 
     environment = {
+      BIN_DIR    = self.triggers.bin_dir
       KUBECONFIG = self.triggers.kubeconfig
     }
   }
 }
-resource null_resource retrieve_argocd_config {
-  triggers = {
-    always = timestamp()
+
+data external argocd_config {
+  program = ["bash", "${path.module}/scripts/get-argocd-config.sh"]
+
+  query = {
+    namespace = var.gitops_namespace
+    kube_config = var.cluster_config_file
+    bin_dir = module.setup_clis.bin_dir
   }
-
-  provisioner "local-exec" {
-    command = "${path.module}/scripts/get-argocd-config.sh '${var.gitops_namespace}' '${local.argocd_config_file}'"
-
-    environment = {
-      KUBECONFIG = var.cluster_config_file
-      BIN_DIR = module.setup_clis.bin_dir
-    }
-  }
-}
-
-data local_file argocd_config {
-  depends_on = [null_resource.retrieve_argocd_config]
-
-  filename = local.argocd_config_file
 }
 
 resource null_resource bootstrap_argocd {
   depends_on = [null_resource.create_tls_secret]
 
   triggers = {
-    argocd_host = local.argocd_config.host
-    argocd_user = local.argocd_config.user
-    argocd_password = local.argocd_config.password
+    argocd_host = data.external.argocd_config.result.host
+    argocd_user = data.external.argocd_config.result.user
+    argocd_password = data.external.argocd_config.result.password
     git_repo = var.gitops_repo_url
     git_token = var.git_token
     prefix = var.prefix
     bin_dir = module.setup_clis.bin_dir
     kubeconfig = var.cluster_config_file
+    delete_app = var.delete_app_on_destroy
   }
 
   provisioner "local-exec" {
@@ -102,6 +94,7 @@ resource null_resource bootstrap_argocd {
       ARGOCD_PASSWORD = self.triggers.argocd_password
       BIN_DIR = self.triggers.bin_dir
       KUBECONFIG = self.triggers.kubeconfig
+      DELETE_APP = self.triggers.delete_app
     }
   }
 }
@@ -111,7 +104,7 @@ resource null_resource create_webhook {
   count = var.create_webhook ? 1 : 0
 
   provisioner "local-exec" {
-    command = "${path.module}/scripts/argocd-webhook.sh '${local.argocd_config.host}' '${var.gitops_repo_url}'"
+    command = "${path.module}/scripts/argocd-webhook.sh '${data.external.argocd_config.result.host}' '${var.gitops_repo_url}'"
 
     environment = {
       GIT_TOKEN = nonsensitive(var.git_token)

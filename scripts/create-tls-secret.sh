@@ -13,6 +13,13 @@ if [[ -z "${TMP_DIR}" ]]; then
 fi
 mkdir -p "${TMP_DIR}"
 
+export PATH="${BIN_DIR}:${PATH}"
+
+if ! command -v kubectl 1> /dev/null 2> /dev/null; then
+  echo "kubectl cli not found"
+  exit 1
+fi
+
 PRIVATE_KEY_FILE="${TMP_DIR}/private.key"
 CERT_FILE="${TMP_DIR}/cert.key"
 
