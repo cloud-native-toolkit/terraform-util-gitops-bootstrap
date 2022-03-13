@@ -1,0 +1,5 @@
+{
+  "kube_config": "/Users/seansundus.ibm.com/.kube/config",
+  "namespace": "openshift-gitops",
+  "bin_dir": "/usr/local/bin"
+}
