@@ -34,10 +34,10 @@ if ! oc get secret "${SECRET_NAME}" -n "${NAMESPACE}" 1> /dev/null 2> /dev/null;
   exit 1
 fi
 
-PASSWORD=$(oc get secret "${SECRET_NAME}" -n "${NAMESPACE}" -o json | jq -r '.data["admin.password"]' | base64 -d)
+PASSWORD=$(oc get secret "${SECRET_NAME}" -n "${NAMESPACE}" -o json | jq -r '.data["admin.password"]')
 
 echo '{}' | jq \
   --arg HOST "${HOST}" \
   --arg USER "${USER}" \
   --arg PASSWORD "${PASSWORD}" \
-  '{"host": $HOST, "user": $USER, "password": $PASSWORD}'
+  '{"host": $HOST, "user": $USER, "password": $PASSWORD | @base64d}'
