@@ -1,7 +1,7 @@
 locals {
   tmp_dir = "${path.cwd}/.tmp/gitops-bootstrap"
   secret_name = "custom-sealed-secret-${random_string.suffix.result}"
-  prefix = var.prefix != null ? replace(var.prefix, "_", "-") : null
+  prefix = var.prefix != null ? replace(var.prefix, "_", "-") : ""
 }
 
 resource random_string suffix {
