@@ -1,31 +1,20 @@
-# Starter kit for a Terraform module
-
-This is a Starter kit to help with the creation of Terraform modules. The basic structure of a Terraform module is fairly
-simple and consists of the following basic values:
-
-- README.md - provides a description of the module
-- main.tf - defiens the logic for the module
-- variables.tf (optional) - defines the input variables for the module
-- outputs.tf (optional) - defines the values that are output from the module
-
-Beyond those files, any other content can be added and organized however you see fit. For example, you can add a `scripts/` directory
-that contains shell scripts executed by a `local-exec` `null_resource` in the terraform module. The contents will depend on what your
-module does and how it does it.
-
-## Instructions for creating a new module
-
-1. Update the title and description in the README to match the module you are creating
-2. Fill out the remaining sections in the README template as appropriate
-3. Implement your logic in the in the main.tf, variables.tf, and outputs.tf
-4. Use releases/tags to manage release versions of your module
+# GitOps Bootstrap module
 
 ## Module overview
 
 ### Description
 
-Description of module
+Module to bootstrap an existing OpenShift Gitops (ArgoCD) instance with an existing gitops repo. This module uses the ArgoCD cli to interact with the ArgoCD instance running in the cluster, and therefore needs direct access to the cluster.
 
-**Note:** This module follows the Terraform conventions regarding how provider configuration is defined within the Terraform template and passed into the module - https://www.terraform.io/docs/language/modules/develop/providers.html. The default provider configuration flows through to the module. If different configuration is required for a module, it can be explicitly passed in the `providers` block of the module - https://www.terraform.io/docs/language/modules/develop/providers.html#passing-providers-explicitly.
+The ArgoCD cli is used to perform the following:
+
+- Log into the ArgoCD instance
+- Save the credentials required to access gitops repo
+
+Tbe remaining ArgoCD resources are added to the cluster as custom resources using the `oc` cli:
+
+- Create the bootstrap project
+- Create the bootstrap application, using the gitops repository and the path to the bootstrap content in the repository
 
 ### Software dependencies
 
@@ -43,23 +32,27 @@ The module depends on the following software components:
 
 This module makes use of the output from other modules:
 
-- Cluster - github.com/cloud-native-toolkit/terraform-ibm-container-platform.git
-- Namespace - github.com/cloud-native-toolkit/terraform-cluster-namespace.git
-- etc
+- Cluster - any module implementing the github.com/cloud-native-toolkit/automation-modules#cluster interface
+- Gitops repo - github.com/cloud-native-toolkit/terraform-tools-gitops
+- Sealed Secret cert - github.com/cloud-native-toolkit/terraform-util-sealed-secret-cert
 
 ### Example usage
 
 ```hcl-terraform
-module "argocd" {
-  source = "github.com/cloud-native-toolkit/terraform-tools-argocd.git"
+module "gitops-bootstrap" {
+  source = "github.com/cloud-native-toolkit/terraform-util-gitops-bootstrap"
 
   cluster_config_file = module.dev_cluster.config_file_path
-  cluster_type        = module.dev_cluster.type
-  app_namespace       = module.dev_cluster_namespaces.tools_namespace_name
-  ingress_subdomain   = module.dev_cluster.ingress_hostname
-  olm_namespace       = module.dev_software_olm.olm_namespace
-  operator_namespace  = module.dev_software_olm.target_namespace
-  name                = "argocd"
+  gitops_repo_url     = module.gitops.config_repo_url
+  git_username        = module.gitops.config_username
+  git_token           = module.gitops.config_token
+  bootstrap_path      = module.gitops.bootstrap_path
+  sealed_secret_cert  = module.cert.cert
+  sealed_secret_private_key = module.cert.private_key
+  prefix              = var.bootstrap_prefix
+  create_webhook      = true
+  kubeseal_namespace = var.kubeseal_namespace
+  delete_app_on_destroy = false
 }
 ```
 
