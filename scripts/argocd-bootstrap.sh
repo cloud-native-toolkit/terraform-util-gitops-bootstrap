@@ -49,9 +49,8 @@ LABEL="gitops-bootstrap"
 PROJECT_NAME="0-bootstrap"
 BOOTSTRAP_APP_NAME="0-bootstrap"
 if [[ -n "${PREFIX}" ]]; then
-  CLEANED_PREFIX=$(echo "${PREFIX}" | sed -E 's/_/-/g')
-  BOOTSTRAP_APP_NAME="${CLEANED_PREFIX}-${BOOTSTRAP_APP_NAME}"
-  LABEL="${CLEANED_PREFIX}-${LABEL}"
+  BOOTSTRAP_APP_NAME="${PREFIX}-${BOOTSTRAP_APP_NAME}"
+  LABEL="${PREFIX}-${LABEL}"
 fi
 
 echo "Creating bootstrap project and bootstrap application"
