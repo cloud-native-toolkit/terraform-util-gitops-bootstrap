@@ -22,6 +22,6 @@ output "project_name" {
 }
 
 output "app_name" {
-  value       = var.prefix != "" ? "${var.prefix}-0-bootstrap" : "0-bootstrap"
+  value       = local.prefix != "" ? "${local.prefix}-0-bootstrap" : "0-bootstrap"
   depends_on  = [null_resource.bootstrap_argocd]
 }
