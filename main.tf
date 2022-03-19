@@ -1,6 +1,7 @@
 locals {
   tmp_dir = "${path.cwd}/.tmp/gitops-bootstrap"
   secret_name = "custom-sealed-secret-${random_string.suffix.result}"
+  prefix = var.prefix ? replace(var.prefix, "_", "-") : null
 }
 
 resource random_string suffix {
@@ -68,7 +69,7 @@ resource null_resource bootstrap_argocd {
     argocd_password = data.external.argocd_config.result.password
     git_repo = var.gitops_repo_url
     git_token = var.git_token
-    prefix = var.prefix
+    prefix = local.prefix
     bin_dir = module.setup_clis.bin_dir
     kubeconfig = var.cluster_config_file
     delete_app = var.delete_app_on_destroy
