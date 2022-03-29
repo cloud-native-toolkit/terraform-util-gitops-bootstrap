@@ -22,16 +22,16 @@ if ! command -v jq 1> /dev/null 2> /dev/null; then
 fi
 
 if ! oc get route "${ROUTE_NAME}" -n "${NAMESPACE}" 1> /dev/null 2> /dev/null; then
-  echo "{\"status\": \"error\", \"message\": \"Unable to find route: ${NAMESPACE}/${ROUTE_NAME}\"}"
-  exit 1
+  echo "{\"host\": \"\", \"user\": \"\", \"password\":\"\", \"status\": \"error\", \"message\": \"Unable to find route: ${NAMESPACE}/${ROUTE_NAME}\"}"
+  exit 0
 fi
 
 HOST=$(oc get route "${ROUTE_NAME}" -n "${NAMESPACE}" -o json | jq -r '.spec.host')
 USER="admin"
 
 if ! oc get secret "${SECRET_NAME}" -n "${NAMESPACE}" 1> /dev/null 2> /dev/null; then
-  echo "{\"status\": \"error\", \"message\": \"Unable to find secret: ${NAMESPACE}/${SECRET_NAME}\"}"
-  exit 1
+  echo "{\"host\": \"\", \"user\": \"\", \"password\":\"\", \"status\": \"error\", \"message\": \"Unable to find secret: ${NAMESPACE}/${SECRET_NAME}\"}"
+  exit 0
 fi
 
 PASSWORD=$(oc get secret "${SECRET_NAME}" -n "${NAMESPACE}" -o json | jq -r '.data["admin.password"]')
