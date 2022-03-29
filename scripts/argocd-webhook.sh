@@ -3,6 +3,11 @@
 ARGOCD_HOST="$1"
 GIT_URL="$2"
 
+if [[ -z "${ARGOCD_HOST}" ]] || [[ -z "${GIT_URL}" ]]; then
+  echo "usage: argocd-webhook.sh ARGOCD_HOST GIT_URL"
+  exit 1
+fi
+
 if [[ -z "${GIT_TOKEN}" ]]; then
   echo "GIT_TOKEN must be provided as an environment variable"
   exit 1
