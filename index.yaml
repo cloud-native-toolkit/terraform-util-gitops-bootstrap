@@ -97,6 +97,106 @@ versions:
           Flag indicating that the bootstrap application should be removed from
           the cluster when the module is destroyed
         default: true
+    version: v1.2.10
+    outputs:
+      - name: secret_name
+        description: The name of the kubeseal secret that was created
+      - name: gitops_namespace
+        description: The name of the kubeseal secret that was created
+      - name: kubeseal_namespace
+        description: The name of the namespace namespace where kubeseal is deployed
+      - name: project_name
+      - name: app_name
+  - platforms: []
+    dependencies:
+      - id: cluster
+        interface: github.com/cloud-native-toolkit/automation-modules#cluster
+        refs: []
+      - id: gitops
+        refs:
+          - source: github.com/cloud-native-toolkit/terraform-tools-gitops
+            version: '>= 1.2.0'
+      - id: cert
+        refs:
+          - source: github.com/cloud-native-toolkit/terraform-util-sealed-secret-cert
+            version: '>= 0.0.0'
+    variables:
+      - name: cluster_config_file
+        type: string
+        description: Cluster config file for Kubernetes cluster.
+        moduleRef:
+          id: cluster
+          output: config_file_path
+      - name: gitops_namespace
+        type: string
+        description: The namespace where argocd has been deployed
+        default: openshift-gitops
+      - name: kubeseal_namespace
+        type: string
+        description: The namespace where kubeseal has been deployed
+        default: sealed-secrets
+      - name: gitops_repo_url
+        type: string
+        description: The GitOps repo url
+        moduleRef:
+          id: gitops
+          output: config_repo_url
+      - name: git_username
+        type: string
+        description: The username used to access the GitOps repo
+        moduleRef:
+          id: gitops
+          output: config_username
+      - name: git_token
+        type: string
+        description: The token used to access the GitOps repo
+        sensitive: true
+        moduleRef:
+          id: gitops
+          output: config_token
+      - name: bootstrap_path
+        type: string
+        description: The path to the bootstrap config for ArgoCD
+        moduleRef:
+          id: gitops
+          output: bootstrap_path
+      - name: sealed_secret_cert
+        type: string
+        description: >-
+          The certificate that will be used to encrypt sealed secrets. If not
+          provided, a new one will be generated
+        default: ''
+        moduleRef:
+          id: cert
+          output: cert
+      - name: sealed_secret_private_key
+        type: string
+        description: >-
+          The private key that will be used to decrypt sealed secrets. If not
+          provided, a new one will be generated
+        default: ''
+        sensitive: true
+        moduleRef:
+          id: cert
+          output: private_key
+      - name: prefix
+        type: string
+        description: >-
+          Prefix value that should be added to the bootstrapped gitops repo in
+          ArgoCD to prevent collisions
+        default: ''
+      - name: create_webhook
+        type: bool
+        description: >-
+          Flag indicating that a webhook should be created to notify the argocd
+          instance
+        default: false
+      - name: delete_app_on_destroy
+        type: bool
+        description: >-
+          Flag indicating that the bootstrap application should be removed from
+          the cluster when the module is destroyed
+        default: true
     version: v1.2.9
     outputs:
       - name: secret_name
