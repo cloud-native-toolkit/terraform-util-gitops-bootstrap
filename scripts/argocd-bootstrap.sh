@@ -39,8 +39,25 @@ while [[ $(curl -s -o /dev/null -w "%{http_code}" "https://${ARGOCD_HOST}") == "
   sleep 30
 done
 
-echo "Logging into argocd: ${ARGOCD_HOST}"
-argocd login "${ARGOCD_HOST}" --username "${ARGOCD_USER}" --password "${ARGOCD_PASSWORD}" --insecure --grpc-web
+ORG_NAME=$(echo "${GIT_REPO}" | sed -E 's~https?://[^/]+/([^/]+)/.*~\1~g' | sed "s/_/-/g" | tr '[:upper:]' '[:lower:]')
+REPO_NAME=$(echo "${GIT_REPO}" | sed -E 's~https?://[^/]+/[^/]+/(.*)~\1~g' | sed "s/_/-/g" | tr '[:upper:]' '[:lower:]')
+
+SECRET_NAME=$(echo "repo-${ORG_NAME}-${REPO_NAME}" | cut -c1-63)
+
+oc apply -f - << EOF
+apiVersion: v1
+kind: Secret
+metadata:
+  name: ${SECRET_NAME}
+  namespace: ${ARGOCD_NAMESPACE}
+  labels:
+    argocd.argoproj.io/secret-type: repository
+stringData:
+  type: git
+  url: ${GIT_REPO}
+  username: ${GIT_USER}
+  password: ${GIT_TOKEN}
+EOF
 
 echo "Registering git repo: ${GIT_REPO}"
 argocd repo add "${GIT_REPO}" --username "${GIT_USER}" --password "${GIT_TOKEN}" --upsert
