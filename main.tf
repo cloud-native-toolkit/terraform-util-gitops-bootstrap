@@ -32,7 +32,7 @@ resource null_resource create_tls_secret {
     environment = {
       BIN_DIR     = self.triggers.bin_dir
       KUBECONFIG  = self.triggers.kubeconfig
-      PRIVATE_KEY = var.sealed_secret_private_key
+      PRIVATE_KEY = nonsensitive(var.sealed_secret_private_key)
       CERT        = var.sealed_secret_cert
       TMP_DIR     = local.tmp_dir
     }
