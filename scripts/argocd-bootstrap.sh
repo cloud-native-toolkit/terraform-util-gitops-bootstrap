@@ -70,6 +70,11 @@ if [[ -n "${PREFIX}" ]]; then
   LABEL="${PREFIX}-${LABEL}"
 fi
 
+FINALIZERS=""
+if [[ "${CASCADING_DELETE}" == "true" ]]; then
+  FINALIZERS="finalizers: ['resources-finalizer.argocd.argoproj.io']"
+fi
+
 echo "Creating bootstrap project and bootstrap application"
 oc apply -f - << EOF
 apiVersion: argoproj.io/v1alpha1
@@ -89,6 +94,7 @@ kind: Application
 metadata:
   name: ${BOOTSTRAP_APP_NAME}
   namespace: ${ARGOCD_NAMESPACE}
+  ${FINALIZERS}
 spec:
   destination:
     namespace: ${ARGOCD_NAMESPACE}

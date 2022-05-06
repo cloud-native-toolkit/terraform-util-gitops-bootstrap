@@ -22,7 +22,7 @@ jobs:
     strategy:
       matrix:
         testcase:
-          - ocp4_latest_gitops
+          - ibm_ocp49
         prefix:
           - ""
           - my_test

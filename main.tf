@@ -84,6 +84,7 @@ resource null_resource bootstrap_argocd {
       GIT_TOKEN = nonsensitive(self.triggers.git_token)
       BIN_DIR = self.triggers.bin_dir
       KUBECONFIG = self.triggers.kubeconfig
+      CASCADING_DELETE = var.cascading_delete
     }
   }
 

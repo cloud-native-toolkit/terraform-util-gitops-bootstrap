@@ -66,3 +66,9 @@ variable "delete_app_on_destroy" {
   description = "Flag indicating that the bootstrap application should be removed from the cluster when the module is destroyed"
   default     = true
 }
+
+variable "cascading_delete" {
+  type        = bool
+  description = "Flag indicating that when the bootstrap application is deleted the child applications should be deleted as well"
+  default     = true
+}
