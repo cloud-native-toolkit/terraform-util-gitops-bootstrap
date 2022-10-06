@@ -54,7 +54,7 @@ data external argocd_config {
   query = {
     namespace = var.gitops_namespace
     kube_config = var.cluster_config_file
-    bin_dir = data.check_clis.clis.bin_dir
+    bin_dir = data.clis_check.clis.bin_dir
   }
 }
 
@@ -70,7 +70,7 @@ resource null_resource bootstrap_argocd {
     git_token = var.git_token
     git_ca_cert = var.git_ca_cert
     prefix = local.prefix
-    bin_dir = data.check_clis.clis.bin_dir
+    bin_dir = data.clis_check.clis.bin_dir
     kubeconfig = var.cluster_config_file
     delete_app = var.delete_app_on_destroy
   }
