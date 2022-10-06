@@ -9,12 +9,10 @@ resource random_string suffix {
   special = false
   lower   = true
   upper   = false
-  number  = true
+  numeric = true
 }
 
-module setup_clis {
-  source = "github.com/cloud-native-toolkit/terraform-util-clis.git"
-
+data clis_check clis {
   clis = ["helm","jq","argocd","kubectl","oc"]
 }
 
@@ -23,7 +21,7 @@ resource null_resource create_tls_secret {
     kubeconfig = var.cluster_config_file
     namespace = var.kubeseal_namespace
     secret_name = local.secret_name
-    bin_dir = module.setup_clis.bin_dir
+    bin_dir = data.clis_check.clis.bin_dir
   }
 
   provisioner "local-exec" {
@@ -56,7 +54,7 @@ data external argocd_config {
   query = {
     namespace = var.gitops_namespace
     kube_config = var.cluster_config_file
-    bin_dir = module.setup_clis.bin_dir
+    bin_dir = data.clis_check.clis.bin_dir
   }
 }
 
@@ -70,8 +68,9 @@ resource null_resource bootstrap_argocd {
     namespace = var.gitops_namespace
     git_repo = var.gitops_repo_url
     git_token = var.git_token
+    git_ca_cert = var.git_ca_cert
     prefix = local.prefix
-    bin_dir = module.setup_clis.bin_dir
+    bin_dir = data.clis_check.clis.bin_dir
     kubeconfig = var.cluster_config_file
     delete_app = var.delete_app_on_destroy
   }
@@ -82,6 +81,7 @@ resource null_resource bootstrap_argocd {
     environment = {
       ARGOCD_PASSWORD = self.triggers.argocd_password
       GIT_TOKEN = nonsensitive(self.triggers.git_token)
+      GIT_CA_CERT = self.triggers.git_ca_cert
       BIN_DIR = self.triggers.bin_dir
       KUBECONFIG = self.triggers.kubeconfig
       CASCADING_DELETE = var.cascading_delete

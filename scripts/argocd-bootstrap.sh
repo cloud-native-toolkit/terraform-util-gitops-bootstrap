@@ -59,6 +59,12 @@ stringData:
   password: ${GIT_TOKEN}
 EOF
 
+if [[ -n "${GIT_CA_CERT}" ]]; then
+  GIT_HOST=$(echo "${GIT_REPO}" | sed -E "s~^https?://~~g" | sed -E "s~([^/]+)/.*~\1~g")
+
+  echo "${GIT_CA_CERT}" | base64 -d | argocd cert add-tls "${GIT_HOST}"
+fi
+
 echo "Registering git repo: ${GIT_REPO}"
 argocd repo add "${GIT_REPO}" --username "${GIT_USER}" --password "${GIT_TOKEN}" --upsert
 
