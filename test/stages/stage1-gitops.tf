@@ -14,4 +14,24 @@ resource null_resource gitops_output {
   provisioner "local-exec" {
     command = "echo -n '${module.gitops.config_token}' > git_token"
   }
+
+  provisioner "local-exec" {
+    command = "echo 'Gitops host: ${module.gitops.config_host}'"
+  }
+
+  provisioner "local-exec" {
+    command = "echo 'Gitops org: ${module.gitops.config_org}'"
+  }
+
+  provisioner "local-exec" {
+    command = "echo 'Gitops repo: ${module.gitops.config_name}'"
+  }
+
+  provisioner "local-exec" {
+    command = "echo 'Gitops username: ${module.gitops.config_username}'"
+  }
+
+  provisioner "local-exec" {
+    command = "echo 'Gitops token: ${module.gitops.config_token}'"
+  }
 }
