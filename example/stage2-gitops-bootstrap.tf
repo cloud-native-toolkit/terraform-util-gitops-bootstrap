@@ -1,7 +1,8 @@
 module "gitops-bootstrap" {
-  source = "./module"
+  source = "../"
+  depends_on = [module.argocd]
 
-  cluster_config_file = module.dev_cluster.config_file_path
+  cluster_config_file = module.cluster.config_file_path
   gitops_repo_url     = module.gitops.config_repo_url
   git_username        = module.gitops.config_username
   git_token           = module.gitops.config_token
@@ -13,6 +14,7 @@ module "gitops-bootstrap" {
   create_webhook      = true
   kubeseal_namespace = var.kubeseal_namespace
   delete_app_on_destroy = false
+  gitops_namespace    = module.argocd.namespace
 }
 
 resource null_resource write_variables {

@@ -8,7 +8,8 @@ ARGOCD_NAMESPACE="$3"
 GIT_REPO="$4"
 GIT_USER="$5"
 BOOTSTRAP_PATH="$6"
-PREFIX="$7"
+BRANCH="$7"
+PREFIX="$8"
 
 if [[ -z "${ARGOCD_HOST}" ]] || [[ -z "${ARGOCD_USER}" ]] || [[ -z "${ARGOCD_NAMESPACE}" ]] || [[ -z "${GIT_REPO}" ]] || [[ -z "${GIT_USER}" ]] || [[ -z "${BOOTSTRAP_PATH}" ]]; then
   echo "Usage: argocd-bootstrap.sh ARGOCD_HOST ARGOCD_USER ARGOCD_NAMESPACE GIT_REPO GIT_USER BOOTSTRAP_PATH"
@@ -115,6 +116,7 @@ spec:
         value: ${LABEL}
     path: ${BOOTSTRAP_PATH}
     repoURL: ${GIT_REPO}
+    targetRevision: ${BRANCH}
   syncPolicy:
     automated:
       prune: true

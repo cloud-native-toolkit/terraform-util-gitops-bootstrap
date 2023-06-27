@@ -16,6 +16,23 @@ data clis_check clis {
   clis = ["helm","jq","argocd","kubectl","oc"]
 }
 
+data gitops_repo_config repo {
+  server_name = var.server_name
+  branch = var.bootstrap_branch
+  bootstrap_url = var.gitops_repo_url
+  username = var.git_username
+  token = var.git_token
+  ca_cert = var.git_ca_cert
+}
+
+resource gitops_metadata metadata {
+  server_name = var.server_name
+  branch = var.bootstrap_branch
+  credentials = data.gitops_repo_config.repo.git_credentials
+  config = data.gitops_repo_config.repo.gitops_config
+  kube_config_path = var.cluster_config_file
+}
+
 resource null_resource create_tls_secret {
   triggers = {
     kubeconfig = var.cluster_config_file
@@ -76,7 +93,7 @@ resource null_resource bootstrap_argocd {
   }
 
   provisioner "local-exec" {
-    command = "${path.module}/scripts/argocd-bootstrap.sh '${self.triggers.argocd_host}' '${self.triggers.argocd_user}' '${self.triggers.namespace}' '${self.triggers.git_repo}' '${var.git_username}' '${var.bootstrap_path}' '${self.triggers.prefix}'"
+    command = "${path.module}/scripts/argocd-bootstrap.sh '${self.triggers.argocd_host}' '${self.triggers.argocd_user}' '${self.triggers.namespace}' '${self.triggers.git_repo}' '${var.git_username}' '${var.bootstrap_path}' '${var.bootstrap_branch}' '${self.triggers.prefix}'"
 
     environment = {
       ARGOCD_PASSWORD = self.triggers.argocd_password
