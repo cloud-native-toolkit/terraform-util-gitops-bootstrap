@@ -1,5 +1,6 @@
 module "gitops-bootstrap" {
   source = "../"
+  depends_on = [module.argocd]
 
   cluster_config_file = module.cluster.config_file_path
   gitops_repo_url     = module.gitops.config_repo_url
