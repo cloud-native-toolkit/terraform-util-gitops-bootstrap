@@ -3,6 +3,15 @@
 BIN_DIR=$(cat .bin_dir)
 export KUBECONFIG=$(cat .kubeconfig)
 
+if [[ -n "${BIN_DIR}" ]]; then
+  export PATH="${BIN_DIR}:${PATH}"
+fi
+
+GIT_REPO=$(cat git_repo)
+GIT_USERNAME=$(cat git_username)
+GIT_TOKEN=$(cat git_token)
+BOOTSTRAP_PATH=$(cat bootstrap_path)
+SERVER_NAME=$(cat server_name)
 SECRET_NAME=$(cat .secret_name)
 GITOPS_NAMESPACE=$(cat .gitops_namespace)
 KUBESEAL_NAMESPACE=$(cat .kubeseal_namespace)
@@ -31,3 +40,20 @@ if ! ${KUBECTL} get application "${APP_NAME}" -n "${GITOPS_NAMESPACE}" 1> /dev/n
 else
   echo "Found application: ${GITOPS_NAMESPACE}/${APP_NAME}"
 fi
+
+
+mkdir -p .testrepo
+
+git clone "https://${GIT_USERNAME}:${GIT_TOKEN}@${GIT_REPO}" .testrepo
+
+cd .testrepo || exit 1
+
+if [[ ! -f "${BOOTSTRAP_PATH}/${SERVER_NAME}/metadata.yaml" ]]; then
+  echo "Unable to find metadata.yaml" >&2
+  ls "${BOOTSTRAP_PATH}" >&2
+  ls "${BOOTSTRAP_PATH}/${SERVER_NAME}" >&2
+
+  exit 1
+fi
+
+cat "${BOOTSTRAP_PATH}/${SERVER_NAME}/metadata.yaml"

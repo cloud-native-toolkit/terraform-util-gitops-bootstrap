@@ -1,5 +1,5 @@
 module "gitops-bootstrap" {
-  source = "./module"
+  source = "../"
 
   cluster_config_file = module.dev_cluster.config_file_path
   gitops_repo_url     = module.gitops.config_repo_url

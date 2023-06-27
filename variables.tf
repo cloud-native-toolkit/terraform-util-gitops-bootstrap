@@ -42,6 +42,12 @@ variable "bootstrap_path" {
   description = "The path to the bootstrap config for ArgoCD"
 }
 
+variable "bootstrap_branch" {
+  type        = string
+  description = "The branch of the bootstrap repo"
+  default     = "main"
+}
+
 variable "sealed_secret_cert" {
   type        = string
   description = "The certificate that will be used to encrypt sealed secrets. If not provided, a new one will be generated"
@@ -77,4 +83,10 @@ variable "cascading_delete" {
   type        = bool
   description = "Flag indicating that when the bootstrap application is deleted the child applications should be deleted as well"
   default     = true
+}
+
+variable "server_name" {
+  type        = string
+  description = "The name of the server in the multi-tenant repo"
+  default     = "default"
 }

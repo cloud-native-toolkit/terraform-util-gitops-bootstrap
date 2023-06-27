@@ -17,25 +17,26 @@ on:
 jobs:
   verify:
     runs-on: ubuntu-latest
-    container: quay.io/cloudnativetoolkit/cli-tools:v1.1
 
     strategy:
       matrix:
         testcase:
-          - ibm_ocp49
+          - ocp4_latest
+          - iks_latest
         prefix:
           - ""
           - my_test
       fail-fast: false
       max-parallel: 1
 
-    env:
-      HOME: /home/devops
-
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       - name: Checkout
-        uses: actions/checkout@v1
+        uses: actions/checkout@v3
+
+      - uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: 1.2.9
 
       - id: variables
         name: Set up variables
@@ -45,36 +46,38 @@ jobs:
         run: |
           repo=$(echo ${GITHUB_REPOSITORY} | sed -E "s~.*/[^-]+-(.*)~\1~g")
           echo "Repo: $repo"
-          echo "::set-output name=repo::$repo"
+          echo "repo=$repo" >> $GITHUB_OUTPUT
 
           org="${GIT_ORG:-cloud-native-toolkit-test}"
           echo "Org: $org"
-          echo "::set-output name=org::$org"
+          echo "org=$org" >> $GITHUB_OUTPUT
 
-      - name: Verify deploy on ${{ matrix.testcase }}, ${{ matrix.prefix }}
-        uses: cloud-native-toolkit/action-module-verify-deploy@main
+      - name: Verify deploy on ${{ matrix.testcase }}
+        uses: cloud-native-toolkit/action-module-verify-deploy@v2
         with:
-          clusterId: ${{ matrix.testcase }}
+          testcase: ${{ matrix.testcase }}
           validateDeployScript: .github/scripts/validate-deploy.sh
+          testStagesDir: example
         env:
+          TF_VAR_ibmcloud_api_key: ${{ secrets.IBMCLOUD_API_KEY }}
+          IBMCLOUD_API_KEY: ${{ secrets.IBMCLOUD_API_KEY }}
           TF_VAR_git_username: ${{ secrets.GIT_ADMIN_USERNAME }}
           TF_VAR_git_token: ${{ secrets.GIT_ADMIN_TOKEN }}
           TF_VAR_git_org: ${{ steps.variables.outputs.org }}
           TF_VAR_git_repo: ${{ steps.variables.outputs.repo }}
-          TF_VAR_ibmcloud_api_key: ${{ secrets.IBMCLOUD_API_KEY }}
           TF_VAR_bootstrap_prefix: ${{ matrix.prefix }}
-          IBMCLOUD_API_KEY: ${{ secrets.IBMCLOUD_API_KEY }}
 
-      - name: Verify destroy on ${{ matrix.testcase }}, ${{ matrix.prefix }}
-        uses: cloud-native-toolkit/action-module-verify-destroy@main
+      - name: Verify destroy on ${{ matrix.testcase }}
+        uses: cloud-native-toolkit/action-module-verify-destroy@v2
         if: ${{ always() }}
         with:
-          clusterId: ${{ matrix.testcase }}
+          testcase: ${{ matrix.testcase }}
+          testStagesDir: example
         env:
+          TF_VAR_ibmcloud_api_key: ${{ secrets.IBMCLOUD_API_KEY }}
+          IBMCLOUD_API_KEY: ${{ secrets.IBMCLOUD_API_KEY }}
           TF_VAR_git_username: ${{ secrets.GIT_ADMIN_USERNAME }}
           TF_VAR_git_token: ${{ secrets.GIT_ADMIN_TOKEN }}
           TF_VAR_git_org: ${{ steps.variables.outputs.org }}
           TF_VAR_git_repo: ${{ steps.variables.outputs.repo }}
-          TF_VAR_ibmcloud_api_key: ${{ secrets.IBMCLOUD_API_KEY }}
           TF_VAR_bootstrap_prefix: ${{ matrix.prefix }}
-          IBMCLOUD_API_KEY: ${{ secrets.IBMCLOUD_API_KEY }}
