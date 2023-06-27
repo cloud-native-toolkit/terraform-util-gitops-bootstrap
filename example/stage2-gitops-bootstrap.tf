@@ -1,7 +1,7 @@
 module "gitops-bootstrap" {
   source = "../"
 
-  cluster_config_file = module.dev_cluster.config_file_path
+  cluster_config_file = module.cluster.config_file_path
   gitops_repo_url     = module.gitops.config_repo_url
   git_username        = module.gitops.config_username
   git_token           = module.gitops.config_token
