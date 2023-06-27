@@ -24,6 +24,11 @@ versions:
       refs:
         - source: github.com/cloud-native-toolkit/terraform-util-sealed-secret-cert
           version: ">= 0.0.0"
+    - id: argocd
+      optional: true
+      refs:
+        - source: github.com/cloud-native-toolkit/terraform-tools-argocd
+          version: ">= 0.0.0"
   variables:
     - name: cluster_config_file
       moduleRef:
@@ -65,3 +70,7 @@ versions:
       moduleRef:
         id: cert
         output: private_key
+    - name: gitops_namespace
+      moduleRef:
+        id: argocd
+        output: namespace

@@ -14,6 +14,7 @@ module "gitops-bootstrap" {
   create_webhook      = true
   kubeseal_namespace = var.kubeseal_namespace
   delete_app_on_destroy = false
+  gitops_namespace    = module.argocd.namespace
 }
 
 resource null_resource write_variables {
