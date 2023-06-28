@@ -8,11 +8,13 @@ module "gitops-bootstrap" {
   git_token           = module.gitops.config_token
   git_ca_cert         = module.gitops.config_ca_cert
   bootstrap_path      = module.gitops.bootstrap_path
+  bootstrap_branch    = module.gitops.bootstrap_branch
+  server_name         = module.gitops.server_name
   sealed_secret_cert  = module.cert.cert
   sealed_secret_private_key = module.cert.private_key
   prefix              = var.bootstrap_prefix
   create_webhook      = true
-  kubeseal_namespace = var.kubeseal_namespace
+  kubeseal_namespace  = var.kubeseal_namespace
   delete_app_on_destroy = false
   gitops_namespace    = module.argocd.namespace
 }

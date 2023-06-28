@@ -16,20 +16,20 @@ data clis_check clis {
   clis = ["helm","jq","argocd","kubectl","oc"]
 }
 
-data gitops_repo_config repo {
-  server_name = var.server_name
-  branch = var.bootstrap_branch
-  bootstrap_url = var.gitops_repo_url
+resource gitops_repo repo {
+  repo_url = var.gitops_repo_url
+  ca_cert = var.git_ca_cert
   username = var.git_username
   token = var.git_token
-  ca_cert = var.git_ca_cert
+  gitops_namespace = var.gitops_namespace
+  sealed_secrets_cert = var.sealed_secret_cert
 }
 
 resource gitops_metadata metadata {
-  server_name = var.server_name
-  branch = var.bootstrap_branch
-  credentials = data.gitops_repo_config.repo.git_credentials
-  config = data.gitops_repo_config.repo.gitops_config
+  server_name = gitops_repo.repo.result_server_name
+  branch = gitops_repo.repo.result_server_name
+  credentials = gitops_repo.repo.git_credentials
+  config = gitops_repo.repo.gitops_config
   kube_config_path = var.cluster_config_file
 }
 
