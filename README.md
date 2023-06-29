@@ -26,7 +26,8 @@ The module depends on the following software components:
 
 #### Terraform providers
 
-- IBM Cloud provider >= 1.5.3
+- cloud-native-toolkit/clis
+- cloud-native-toolkit/gitops
 
 ### Module dependencies
 
@@ -35,6 +36,7 @@ This module makes use of the output from other modules:
 - Cluster - any module implementing the github.com/cloud-native-toolkit/automation-modules#cluster interface
 - Gitops repo - github.com/cloud-native-toolkit/terraform-tools-gitops
 - Sealed Secret cert - github.com/cloud-native-toolkit/terraform-util-sealed-secret-cert
+- ArgoCD (optional) - github.com/cloud-native-toolkit/terraform-tools-argocd
 
 ### Example usage
 
@@ -42,17 +44,21 @@ This module makes use of the output from other modules:
 module "gitops-bootstrap" {
   source = "github.com/cloud-native-toolkit/terraform-util-gitops-bootstrap"
 
-  cluster_config_file = module.dev_cluster.config_file_path
+  cluster_config_file = module.cluster.config_file_path
   gitops_repo_url     = module.gitops.config_repo_url
   git_username        = module.gitops.config_username
   git_token           = module.gitops.config_token
+  git_ca_cert         = module.gitops.config_ca_cert
   bootstrap_path      = module.gitops.bootstrap_path
+  bootstrap_branch    = module.gitops.bootstrap_branch
+  server_name         = module.gitops.server_name
   sealed_secret_cert  = module.cert.cert
   sealed_secret_private_key = module.cert.private_key
   prefix              = var.bootstrap_prefix
   create_webhook      = true
-  kubeseal_namespace = var.kubeseal_namespace
+  kubeseal_namespace  = var.kubeseal_namespace
   delete_app_on_destroy = false
+  gitops_namespace    = module.argocd.namespace
 }
 ```
 
