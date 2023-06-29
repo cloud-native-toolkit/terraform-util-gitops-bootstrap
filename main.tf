@@ -13,7 +13,7 @@ resource random_string suffix {
 }
 
 data clis_check clis {
-  clis = ["helm","jq","argocd","kubectl","oc"]
+  clis = ["helm", "jq", "argocd", "kubectl", "oc"]
 }
 
 resource gitops_repo repo {
