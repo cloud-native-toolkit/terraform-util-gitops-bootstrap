@@ -66,6 +66,7 @@ jobs:
           TF_VAR_git_org: ${{ steps.variables.outputs.org }}
           TF_VAR_git_repo: ${{ steps.variables.outputs.repo }}
           TF_VAR_bootstrap_prefix: ${{ matrix.prefix }}
+          TF_LOG_PROVIDER: DEBUG
 
       - name: Verify destroy on ${{ matrix.testcase }}
         uses: cloud-native-toolkit/action-module-verify-destroy@v2
@@ -81,3 +82,4 @@ jobs:
           TF_VAR_git_org: ${{ steps.variables.outputs.org }}
           TF_VAR_git_repo: ${{ steps.variables.outputs.repo }}
           TF_VAR_bootstrap_prefix: ${{ matrix.prefix }}
+          TF_LOG_PROVIDER: DEBUG
