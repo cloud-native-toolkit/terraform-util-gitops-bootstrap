@@ -5,6 +5,8 @@ tags:
     - tools
     - gitops
     - bootstrap
+interfaces:
+  - github.com/cloud-native-toolkit/automation-modules#argocd-bootstrap
 versions:
 - platforms: []
   providers:

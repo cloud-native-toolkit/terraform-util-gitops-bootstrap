@@ -25,3 +25,8 @@ output "app_name" {
   value       = local.prefix != "" ? "${local.prefix}-0-bootstrap" : "0-bootstrap"
   depends_on  = [null_resource.bootstrap_argocd]
 }
+
+output "sync" {
+  value       = "bootstrap"
+  depends_on  = [gitops_metadata.metadata]
+}
