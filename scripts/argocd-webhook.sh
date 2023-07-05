@@ -24,4 +24,4 @@ fi
 
 WEBHOOK_URL="https://${ARGOCD_HOST}/api/webhook"
 
-gitu --gitUrl "${GIT_URL}" "${WEBHOOK_URL}" || echo "Error creating webhook"
+gitu webhook --gitUrl "${GIT_URL}" "${WEBHOOK_URL}" || echo "Error creating webhook"
