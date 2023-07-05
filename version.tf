@@ -4,6 +4,7 @@ terraform {
   required_providers {
     clis = {
       source  = "cloud-native-toolkit/clis"
+      version = ">= 0.4.2"
     }
     gitops = {
       source = "cloud-native-toolkit/gitops"
