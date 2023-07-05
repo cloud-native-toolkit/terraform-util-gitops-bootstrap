@@ -13,7 +13,7 @@ resource random_string suffix {
 }
 
 data clis_check clis {
-  clis = ["helm", "jq", "argocd", "kubectl", "oc"]
+  clis = ["helm", "jq", "argocd", "kubectl", "oc", "gitu"]
 }
 
 resource gitops_repo repo {
@@ -127,7 +127,9 @@ resource null_resource create_webhook {
     command = "${path.module}/scripts/argocd-webhook.sh '${data.external.argocd_config.result.host}' '${var.gitops_repo_url}'"
 
     environment = {
+      GIT_USERNAME = var.git_username
       GIT_TOKEN = nonsensitive(var.git_token)
+      BIN_DIR   = data.clis_check.clis.bin_dir
     }
   }
 }
